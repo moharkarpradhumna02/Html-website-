@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreatorCollab — Collaboration Marketplace</title>
+  <style>
+    :root {
+      --bg: #0c0c0f;
+      --bg-elevated: #141419;
+      --bg-card: #1a1a22;
+      --bg-hover: #22222c;
+      --border: #2a2a35;
+      --border-light: #333340;
+      --text: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent: #a78bfa;
+      --accent-strong: #8b5cf6;
+      --accent-soft: rgba(167, 139, 250, 0.12);
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --red: #f87171;
+      --orange: #fb923c;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    nav {
+      background: rgba(12, 12, 15, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent-strong), var(--cyan));
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      color: white;
+    }
+
+    .nav-links { display: flex; gap: 0.35rem; }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .nav-btn:hover { color: var(--text); background: var(--bg-hover); }
+    .nav-btn.active { background: var(--accent-soft); color: var(--accent); }
+
+    .nav-cta {
+      background: var(--accent-strong);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+
+    .nav-cta:hover { background: #7c3aed; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 3.5rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(90deg, #f4f4f5, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.25s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.35rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-top h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.15rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      transition: border-color 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    .creator-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-strong), var(--cyan));
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      color: white;
+    }
+
+    .creator-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .creator-info .role {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.35rem;
+    }
+
+    .status.available { color: var(--green); }
+    .status.busy { color: var(--orange); }
+
+    .status::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.85rem 0 1rem;
+    }
+
+    .skill-tag {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.1rem;
+      flex: 1;
+    }
+
+    .card-actions { display: flex; gap: 0.5rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent-strong);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover { background: #7c3aed; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--red);
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.7rem;
+    }
+
+    .btn-danger:hover { background: rgba(248, 113, 113, 0.2); }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      transition: border-color 0.2s;
+    }
+
+    .project-card:hover { border-color: var(--border-light); }
+
+    .project-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+
+    .project-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .looking-for {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .looking-tag {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 1.15rem 1.35rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 { font-size: 1.05rem; font-weight: 600; }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 1.35rem; }
+
+    .form-group { margin-bottom: 1.1rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .form-group .error {
+      color: var(--red);
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .form-group.invalid input,
+    .form-group.invalid select,
+    .form-group.invalid textarea {
+      border-color: var(--red);
+    }
+
+    .form-group.invalid .error { display: block; }
+
+    .modal-footer {
+      padding: 1rem 1.35rem 1.35rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
+
+    .request-list, .message-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .request-item, .message-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .request-item h4, .message-item h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .request-item p, .message-item p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.85rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 300;
+      box-shadow: var(--shadow);
+      transform: translateY(120%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      max-width: 320px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success { border-color: var(--green); }
+    .toast.error { border-color: var(--red); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 1.5rem 0.5rem 1.25rem; }
+      .request-item, .message-item { flex-direction: column; }
+      .request-actions { width: 100%; }
+      .request-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-mark">CC</div>
+        CreatorCollab
+      </div>
+      <div class="nav-links">
+        <button class="nav-btn active" data-view="creators">Creators</button>
+        <button class="nav-btn" data-view="projects">Projects</button>
+        <button class="nav-btn" data-view="requests">Requests</button>
+        <button class="nav-btn" data-view="messages">Messages</button>
+      </div>
+      <button class="nav-cta" onclick="openModal('createProfile')">+ Create Profile</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <h1>Find collaborators. Build together.</h1>
+      <p>A marketplace for independent creators to discover teammates with complementary skills.</p>
+    </div>
+
+    <div class="view active" id="view-creators">
+      <div class="section-top">
+        <h2>Creators <span class="badge" id="creatorCount">0</span></h2>
+      </div>
+      <div class="grid" id="creatorsGrid"></div>
+    </div>
+
+    <div class="view" id="view-projects">
+      <div class="section-top">
+        <h2>Open Projects <span class="badge" id="projectCount">0</span></h2>
+        <button class="btn btn-primary" style="width:auto" onclick="openModal('createProject')">+ Post Project</button>
+      </div>
+      <div class="grid" id="projectsGrid" style="grid-template-columns: 1fr;"></div>
+    </div>
+
+    <div class="view" id="view-requests">
+      <div class="section-top">
+        <h2>Collaboration Requests <span class="badge" id="requestCount">0</span></h2>
+      </div>
+      <div class="request-list" id="requestList"></div>
+    </div>
+
+    <div class="view" id="view-messages">
+      <div class="section-top">
+        <h2>Messages <span class="badge" id="messageCount">0</span></h2>
+      </div>
+      <div class="message-list" id="messageList"></div>
+    </div>
+  </div>
+
+  <!-- Create Profile Modal -->
+  <div class="modal-overlay" id="modal-createProfile">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Creator Profile</h3>
+        <button class="modal-close" onclick="closeModal('createProfile')">×</button>
+      </div>
+      <form id="profileForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Display Name *</label>
+            <input type="text" id="pName" placeholder="Your creator name" required />
+            <div class="error">Name is required (min 2 characters)</div>
+          </div>
+          <div class="form-group">
+            <label>Primary Role *</label>
+            <select id="pRole" required>
+              <option value="">Select role</option>
+              <option>UI/UX Designer</option>
+              <option>Frontend Developer</option>
+              <option>Backend Developer</option>
+              <option>Full-Stack Developer</option>
+              <option>Motion Designer</option>
+              <option>Illustrator</option>
+              <option>Video Editor</option>
+              <option>Content Writer</option>
+              <option>Product Manager</option>
+              <option>3D Artist</option>
+            </select>
+            <div class="error">Please select a role</div>
+          </div>
+          <div class="form-group">
+            <label>Skills (comma separated) *</label>
+            <input type="text" id="pSkills" placeholder="Figma, React, After Effects..." required />
+            <div class="error">Add at least one skill</div>
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="pBio" placeholder="Short intro about your work and what you're looking for..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Portfolio Link</label>
+            <input type="url" id="pPortfolio" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label>Availability</label>
+            <select id="pAvail">
+              <option value="available">Available for projects</option>
+              <option value="busy">Currently busy</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('createProfile')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" id="modal-createProject">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Post a Project</h3>
+        <button class="modal-close" onclick="closeModal('createProject')">×</button>
+      </div>
+      <form id="projectForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Project Title *</label>
+            <input type="text" id="projTitle" placeholder="e.g. Mobile App Redesign" required />
+            <div class="error">Title is required</div>
+          </div>
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea id="projDesc" placeholder="What are you building? What stage is it at?" required></textarea>
+            <div class="error">Description is required</div>
+          </div>
+          <div class="form-group">
+            <label>Looking for (skills, comma separated) *</label>
+            <input type="text" id="projSkills" placeholder="UI Designer, React Developer..." required />
+            <div class="error">Add at least one skill needed</div>
+          </div>
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="projOwner" placeholder="Your name" required />
+            <div class="error">Name is required</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('createProject')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Post Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Request Modal -->
+  <div class="modal-overlay" id="modal-request">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="requestTitle">Send Collaboration Request</h3>
+        <button class="modal-close" onclick="closeModal('request')">×</button>
+      </div>
+      <form id="requestForm">
+        <div class="modal-body">
+          <input type="hidden" id="reqTargetId" />
+          <input type="hidden" id="reqType" />
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="reqName" required />
+            <div class="error">Name is required</div>
+          </div>
+          <div class="form-group">
+            <label>Message *</label>
+            <textarea id="reqMessage" placeholder="Introduce yourself and why you'd like to collaborate..." required></textarea>
+            <div class="error">Please write a short message</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('request')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Message Modal -->
+  <div class="modal-overlay" id="modal-message">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="msgTitle">Send Message</h3>
+        <button class="modal-close" onclick="closeModal('message')">×</button>
+      </div>
+      <form id="messageForm">
+        <div class="modal-body">
+          <input type="hidden" id="msgToId" />
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="msgFrom" required />
+            <div class="error">Name is required</div>
+          </div>
+          <div class="form-group">
+            <label>Message *</label>
+            <textarea id="msgBody" placeholder="Write your message..." required></textarea>
+            <div class="error">Message cannot be empty</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('message')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const defaultCreators = [
+      { id: 1, name: "Aisha Khan", role: "UI/UX Designer", skills: ["Figma", "Prototyping", "Design Systems"], bio: "Product designer focused on clean interfaces and user research. Looking for frontend partners.", portfolio: "https://aisha.design", availability: "available" },
+      { id: 2, name: "Rohan Mehta", role: "Frontend Developer", skills: ["React", "TypeScript", "Next.js"], bio: "Building fast, accessible web apps. Open to design-driven projects.", portfolio: "https://rohan.dev", availability: "available" },
+      { id: 3, name: "Priya Sharma", role: "Motion Designer", skills: ["After Effects", "Cinema 4D", "Lottie"], bio: "Motion for product & brand. Available for short-term collabs.", portfolio: "", availability: "busy" },
+      { id: 4, name: "Arjun Patel", role: "Backend Developer", skills: ["Node.js", "PostgreSQL", "AWS"], bio: "API design and scalable backends. Happy to pair with frontend/UI folks.", portfolio: "https://github.com/arjun", availability: "available" },
+      { id: 5, name: "Sneha Reddy", role: "Content Writer", skills: ["Copywriting", "SEO", "Technical Writing"], bio: "Words that convert. Looking for product and design collaborators.", portfolio: "", availability: "available" },
+      { id: 6, name: "Vikram Singh", role: "Full-Stack Developer", skills: ["React", "Node.js", "MongoDB"], bio: "End-to-end product builds. Open to serious side projects.", portfolio: "https://vikram.codes", availability: "busy" }
+    ];
+
+    const defaultProjects = [
+      { id: 1, title: "SaaS Dashboard Redesign", description: "Redesigning an existing analytics dashboard for better clarity and mobile experience. Looking for a designer and a React developer.", skills: ["UI/UX", "React", "Figma"], owner: "Neha Gupta", createdAt: "2026-10-20" },
+      { id: 2, title: "Indie Game Trailer", description: "Need a motion designer and video editor for a 60-second trailer of an upcoming pixel-art game.", skills: ["Motion Design", "Video Editing", "Sound Design"], owner: "Karan Joshi", createdAt: "2026-10-22" },
+      { id: 3, title: "Creator Portfolio Template", description: "Building a free open-source portfolio starter for designers. Need frontend help and content examples.", skills: ["Frontend", "Content", "Design"], owner: "Meera Iyer", createdAt: "2026-10-25" }
+    ];
+
+    function load(key, fallback) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : fallback;
+    }
+    function save(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    let creators = load('cc_creators', defaultCreators);
+    let projects = load('cc_projects', defaultProjects);
+    let requests = load('cc_requests', []);
+    let messages = load('cc_messages', []);
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + btn.dataset.view).classList.add('active');
+      });
+    });
+
+    function renderCreators() {
+      const grid = document.getElementById('creatorsGrid');
+      document.getElementById('creatorCount').textContent = creators.length;
+      if (!creators.length) {
+        grid.innerHTML = `<div class="empty"><div class="empty-icon">👤</div><p>No creators yet. Create the first profile!</p></div>`;
+        return;
+      }
+      grid.innerHTML = creators.map(c => `
+        <div class="card">
+          <div class="creator-header">
+            <div class="avatar">${c.name.charAt(0)}</div>
+            <div class="creator-info">
+              <h3>${c.name}</h3>
+              <div class="role">${c.role}</div>
+              <div class="status ${c.availability}">${c.availability === 'available' ? 'Available' : 'Busy'}</div>
+            </div>
+          </div>
+          <div class="skills">${c.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+          <p>${c.bio || 'No bio yet.'}</p>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="openRequest(${c.id}, 'creator')">Request Collab</button>
+            <button class="btn btn-ghost" onclick="openMessage(${c.id}, '${c.name.replace(/'/g, "\\'")}')">Message</button>
+          </div>
+          ${c.portfolio ? `<a href="${c.portfolio}" target="_blank" rel="noopener" style="margin-top:0.75rem;font-size:0.8rem;color:var(--accent);text-decoration:none;">View Portfolio →</a>` : ''}
+          <button class="btn btn-danger" style="margin-top:0.75rem;align-self:flex-start" onclick="reportItem('creator', ${c.id})">Report</button>
+        </div>
+      `).join('');
+    }
+
+    function renderProjects() {
+      const grid = document.getElementById('projectsGrid');
+      document.getElementById('projectCount').textContent = projects.length;
+      if (!projects.length) {
+        grid.innerHTML = `<div class="empty"><div class="empty-icon">📁</div><p>No open projects. Post the first one!</p></div>`;
+        return;
+      }
+      grid.innerHTML = projects.map(p => `
+        <div class="project-card">
+          <h3>${p.title}</h3>
+          <div class="project-meta">
+            <span>Posted by ${p.owner}</span>
+            <span>${p.createdAt}</span>
+          </div>
+          <p>${p.description}</p>
+          <div class="looking-for">${p.skills.map(s => `<span class="looking-tag">${s}</span>`).join('')}</div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="openRequest(${p.id}, 'project')">Apply / Collaborate</button>
+            <button class="btn btn-danger" onclick="reportItem('project', ${p.id})">Report</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderRequests() {
+      const list = document.getElementById('requestList');
+      document.getElementById('requestCount').textContent = requests.length;
+      if (!requests.length) {
+        list.innerHTML = `<div class="empty"><div class="empty-icon">📨</div><p>No collaboration requests yet.</p></div>`;
+        return;
+      }
+      list.innerHTML = requests.map((r, i) => `
+        <div class="request-item">
+          <div>
+            <h4>${r.from} → ${r.targetName}</h4>
+            <p>${r.message}</p>
+            <p style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">${r.type} · ${r.status} · ${new Date(r.createdAt).toLocaleDateString()}</p>
+          </div>
+          <div class="request-actions">
+            ${r.status === 'pending' ? `
+              <button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.75rem" onclick="updateRequest(${i}, 'accepted')">Accept</button>
+              <button class="btn btn-ghost" style="padding:0.4rem 0.8rem;font-size:0.75rem" onclick="updateRequest(${i}, 'declined')">Decline</button>
+            ` : `<span style="font-size:0.8rem;color:var(--text-muted)">${r.status}</span>`}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderMessages() {
+      const list = document.getElementById('messageList');
+      document.getElementById('messageCount').textContent = messages.length;
+      if (!messages.length) {
+        list.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><p>No messages yet.</p></div>`;
+        return;
+      }
+      list.innerHTML = messages.map(m => `
+        <div class="message-item">
+          <div>
+            <h4>${m.from} → ${m.to}</h4>
+            <p>${m.body}</p>
+            <p style="margin-top:0.35rem;font-size:0.75rem;color:var(--text-muted)">${new Date(m.createdAt).toLocaleString()}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderCreators();
+      renderProjects();
+      renderRequests();
+      renderMessages();
+    }
+
+    function openModal(name) {
+      document.getElementById('modal-' + name).classList.add('open');
+    }
+    function closeModal(name) {
+      document.getElementById('modal-' + name).classList.remove('open');
+    }
+
+    function openRequest(id, type) {
+      const target = type === 'creator' ? creators.find(c => c.id === id) : projects.find(p => p.id === id);
+      if (!target) return;
+      document.getElementById('reqTargetId').value = id;
+      document.getElementById('reqType').value = type;
+      document.getElementById('requestTitle').textContent = type === 'creator' ? `Request collab with ${target.name}` : `Apply to: ${target.title}`;
+      document.getElementById('requestForm').reset();
+      openModal('request');
+    }
+
+    function openMessage(id, name) {
+      document.getElementById('msgToId').value = id;
+      document.getElementById('msgTitle').textContent = `Message ${name}`;
+      document.getElementById('messageForm').reset();
+      openModal('message');
+    }
+
+    function clearErrors(form) {
+      form.querySelectorAll('.form-group').forEach(g => g.classList.remove('invalid'));
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors(e.target);
+      const name = document.getElementById('pName').value.trim();
+      const role = document.getElementById('pRole').value;
+      const skillsRaw = document.getElementById('pSkills').value.trim();
+      const bio = document.getElementById('pBio').value.trim();
+      const portfolio = document.getElementById('pPortfolio').value.trim();
+      const availability = document.getElementById('pAvail').value;
+      let ok = true;
+      if (name.length < 2) { document.getElementById('pName').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!role) { document.getElementById('pRole').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!skillsRaw) { document.getElementById('pSkills').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!ok) return;
+      const skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
+      const newId = creators.length ? Math.max(...creators.map(c => c.id)) + 1 : 1;
+      creators.push({ id: newId, name, role, skills, bio, portfolio, availability });
+      save('cc_creators', creators);
+      closeModal('createProfile');
+      renderCreators();
+      showToast('Profile created successfully');
+    });
+
+    document.getElementById('projectForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors(e.target);
+      const title = document.getElementById('projTitle').value.trim();
+      const description = document.getElementById('projDesc').value.trim();
+      const skillsRaw = document.getElementById('projSkills').value.trim();
+      const owner = document.getElementById('projOwner').value.trim();
+      let ok = true;
+      if (!title) { document.getElementById('projTitle').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!description) { document.getElementById('projDesc').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!skillsRaw) { document.getElementById('projSkills').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!owner) { document.getElementById('projOwner').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!ok) return;
+      const skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
+      const newId = projects.length ? Math.max(...projects.map(p => p.id)) + 1 : 1;
+      const today = new Date().toISOString().slice(0, 10);
+      projects.push({ id: newId, title, description, skills, owner, createdAt: today });
+      save('cc_projects', projects);
+      closeModal('createProject');
+      renderProjects();
+      showToast('Project posted');
+    });
+
+    document.getElementById('requestForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors(e.target);
+      const from = document.getElementById('reqName').value.trim();
+      const message = document.getElementById('reqMessage').value.trim();
+      const targetId = parseInt(document.getElementById('reqTargetId').value);
+      const type = document.getElementById('reqType').value;
+      let ok = true;
+      if (!from) { document.getElementById('reqName').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!message) { document.getElementById('reqMessage').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!ok) return;
+      const target = type === 'creator' ? creators.find(c => c.id === targetId) : projects.find(p => p.id === targetId);
+      requests.unshift({
+        from, targetId,
+        targetName: type === 'creator' ? target.name : target.title,
+        type, message, status: 'pending', createdAt: new Date().toISOString()
+      });
+      save('cc_requests', requests);
+      closeModal('request');
+      renderRequests();
+      showToast('Collaboration request sent');
+    });
+
+    document.getElementById('messageForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors(e.target);
+      const from = document.getElementById('msgFrom').value.trim();
+      const body = document.getElementById('msgBody').value.trim();
+      const toId = parseInt(document.getElementById('msgToId').value);
+      const creator = creators.find(c => c.id === toId);
+      let ok = true;
+      if (!from) { document.getElementById('msgFrom').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!body) { document.getElementById('msgBody').closest('.form-group').classList.add('invalid'); ok = false; }
+      if (!ok) return;
+      messages.unshift({ from, to: creator ? creator.name : 'Creator', body, createdAt: new Date().toISOString() });
+      save('cc_messages', messages);
+      closeModal('message');
+      renderMessages();
+      showToast('Message sent');
+    });
+
+    function updateRequest(index, status) {
+      requests[index].status = status;
+      save('cc_requests', requests);
+      renderRequests();
+      showToast('Request ' + status);
+    }
+
+    function reportItem(type, id) {
+      if (confirm('Report this ' + type + ' for moderation review?')) {
+        showToast('Report submitted. Thank you.');
+      }
+    }
+
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('open');
+      });
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
